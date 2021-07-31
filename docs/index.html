@@ -32,8 +32,8 @@ g = svg.append("g").attr("transform", "translate(50,50)");
     .data(data)
     .enter()
     .append("circle")
-      .attr("cx", function(d,i) {return xs(d.1996);})
-      .attr("cy", function(d,i) {return ys(d.2004);})
+      .attr("cx", function(d,i) {return xs(d.Mean);})
+      .attr("cy", function(d,i) {return ys(d.Host);})
       .attr("r", function(d,i) {return 6;}); 
 
   d3.select("svg").append("g")
