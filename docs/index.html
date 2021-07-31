@@ -18,11 +18,11 @@
 g = svg.append("g").attr("transform", "translate(50,50)");
   var xs = d3.scaleLog()
     .base(10)
-    .domain([10,150])
+    .domain([0,150])
     .range([0,200]);
   var ys = d3.scaleLog()
     .base(10)
-    .domain([10,150])
+    .domain([0,150])
     .range([200,0]);
 
 
@@ -32,9 +32,9 @@ g = svg.append("g").attr("transform", "translate(50,50)");
     .data(data)
     .enter()
     .append("circle")
-      .attr("cx", function(d,i) {return xs(d.AverageCityMPG);})
-      .attr("cy", function(d,i) {return ys(d.AverageHighwayMPG);})
-      .attr("r", function(d,i) {return +d.EngineCylinders + 2;}); 
+      .attr("cx", function(d,i) {return xs(d.1996);})
+      .attr("cy", function(d,i) {return ys(d.2004);})
+      .attr("r", function(d,i) {return 6;}); 
 
   d3.select("svg").append("g")
 .attr("transform", "translate(50,50)")
