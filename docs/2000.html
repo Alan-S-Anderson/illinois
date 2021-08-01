@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+  
+ <script src='https://d3js.org/d3.v5.min.js'></script>
+<style> rect {stroke: black;} </style>
+<body onload='init()'>
+<svg width=1200 height=800 id="MainSVG">
+  
+  <path d="M0 0 L1199 0 L1199 799 L0 799 Z" stroke="black" stroke-width="4" fill="white"></path>
+  
+</svg>
+
+  
+  
+  <body>
+  <script>  
+  async function init() {
+    const data = await d3.csv(
+    'https://raw.githubusercontent.com/Alan-S-Anderson/illinois/main/docs/OlympicData.csv');
+  
+  d3.select("svg").append("svg:image")
+	 .attr("x","1")
+	 .attr("y", "1")
+	 .attr("width", "1198")
+	 .attr("height", "798")
+	 .attr("opacity", "0.2")
+	 .attr("id", "backing")
+	 .attr("href", "Stadium.jpg");
+  
+  
+  
+  var svg1 = d3.select("svg")
+  var g1 = svg1.append("g").attr("transform", "translate(400,170)");
+  
+// create critical state parameter and set to initial value
+  var GamesYear = 3;
+  var HighlightYear = -1;
+
+  var HostCountry = data[GamesYear].Country;
+  var HostCity = data[GamesYear].City;
+
+//create sub-table of data that contains only the rows for average, hosting year and subsequent games
+  var data_sub = data.filter(function(d){return d.Year == "Average 1988-2016" || d.Year == "Year of Hosting" || d.Year == "Next Games After Hosting"});
+
+//create sub-table of data that contains only the rows for specific Olympic years
+  var games_data = data.filter(function(d){return d.Year != "Average 1988-2016" && d.Year != "Year of Hosting" && d.Year != "Next Games After Hosting"});
+ 
+ 
+ //Add headings
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "200")
+   .attr("y", "50")
+   .attr("font-size", "30px")
+   .attr("fill", "blue")
+   .text("Home ground advantage in the post Cold War summer Olympics"); 
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "140")
+   .attr("font-size", "large")
+   .text(HostCountry + "'s share of total medals over past 8 summer Olympics");
+ 
+ //Add button to return to homepage
+   
+ var homelink = d3.select("svg").append("svg:a")
+	 .attr("id", "homeURL") 
+	 .attr("xlink:href", "index.html")
+	 .attr("opacity", "0.6");
+ 
+ homelink.append("rect")
+    .attr("width", "80")
+	.attr("height", "40")
+	.attr("x", "40")
+	.attr("y", "25")
+	.attr("rx", "5")
+	.attr("fill", "darkblue");
+	
+ homelink.append("text")
+   .attr("x", "55")
+   .attr("y", "40")
+   .attr("font-size", "smaller")
+   .attr("fill", "white")
+   .text("Back to");
+   
+ homelink.append("text")
+   .attr("x", "58")
+   .attr("y", "55")
+   .attr("font-size", "smaller")
+   .attr("fill", "white")
+   .text("HOME");
+   
+  homelink
+    .on("mouseover", function() {return HighlightHome(1);})
+    .on("mouseout", function() {return HighlightHome(0);});
+	 
+ function HighlightHome(i){
+ 	if(i==1){
+		homelink.attr("opacity", "1");
+	}
+	else{
+		homelink.attr("opacity", "0.6");
+	}
+ }  
+   
+ //Add captions
+ 
+  d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "160")
+   .attr("font-size", "smaller")
+   .text("(Percent)");
+ 
+ var annotation = svg1.append("g");
+   
+ annotation
+   .append("rect")
+   .attr("x", "470")
+   .attr("y", "185")
+   .attr("width", "240")
+   .attr("height", "45")
+   .attr("fill", "skyblue");
+ 
+ annotation
+   .append("line")
+   .attr("x1", "550")
+   .attr("y1", "230")
+   .attr("x2", "570")
+   .attr("y2", "280")
+   .attr("stroke", "black");
+
+ annotation
+   .append("line")
+   .attr("x1", "570")
+   .attr("y1", "230")
+   .attr("x2", "620")
+   .attr("y2", "308")
+   .attr("stroke", "black");
+ 
+annotation
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "480")
+   .attr("y", "200")
+   .attr("font-size", "smaller")
+   .text("Subtantial host games perfomance boost");
+   
+annotation
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "480")
+   .attr("y", "220")
+   .attr("font-size", "smaller")
+   .text("persists partially in subsequent games.");  
+ 
+ annotation.attr("opacity","0")
+   .transition().duration(1500)
+   .attr("opacity", "1")
+   .delay(2000);
+   
+ homelink
+     .on("mouseover", function() {return HighlightHome(1);})
+     .on("mouseout", function() {return HighlightHome(0);});
+	 
+ function HighlightHome(i){
+ 	if(i==1){
+		homelink.attr("opacity", "1");
+	}
+	else{
+		homelink.attr("opacity", "0.6");
+	}
+ }  
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "360")
+   .attr("y", "520")
+   .attr("font-size", "smaller")
+   .text(HostCountry + "'s percentage share of total medals (gold, silver, bronze with equal weighting)");
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "540")
+   .attr("font-size", "smaller")
+   .text("Games hosted by " + HostCountry + " in " + HostCity);
+   
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "560")
+   .attr("font-size", "smaller")
+   .text("Subsequent games to those hosted by " + HostCountry);
+ 
+ d3.select("svg")
+   .append("rect")
+   .attr("x", "360")
+   .attr("y", "530")
+   .attr("width", "10")
+   .attr("height", "10")
+   .attr("fill", "gold");
+ 
+ d3.select("svg")
+   .append("rect")
+   .attr("x", "360")
+   .attr("y", "550")
+   .attr("width", "10")
+   .attr("height", "10")
+   .attr("fill", "silver");
+ 
+ //Add the city tiles around the edge of the page
+ 
+ 
+ var tiles = d3.select("svg")
+   .selectAll(".city")
+   .data(games_data)
+     .enter().append("svg:a")
+	 .attr("id", function(d,i) {return "City" + i;}) 
+	 .attr("class","city")
+	 .attr("xlink:href", function(d, i) {
+	 return d.Year + ".html"
+	 })
+	 .attr("transform", function(d, i) {
+	   var xorigin = 0;
+	   var yorigin = 0;
+	   if(i<=2){
+			xorigin = 50;
+		}
+		else if(i==3){
+			xorigin = 350;
+		}
+		else if (i==4){
+			xorigin = 650;
+		}
+		else{
+			xorigin = 950;
+		}
+		
+		if(i==0 || i==7){
+			yorigin = 100;
+		}
+		else if(i==1 || i==6){
+			yorigin = 350;
+		}
+		else{
+			yorigin = 600;
+		}
+
+	 return "translate(" + xorigin +"," + yorigin + ")";
+	 });
+	 
+	 
+   tiles.append("rect")
+	 .attr("width", "200")
+	 .attr("height", "150")
+	 .attr("rx", "15")
+	 .attr("fill", function(d,i) {
+	   if(GamesYear == i){
+	   	 return "gold";}
+	   else {
+	   	 return "beige";
+	   }});
+ 
+   tiles.append("svg:image")
+	 .attr("class","citypic")
+	 .attr("x","25")
+	 .attr("y", "25")
+	 .attr("width", "150")
+	 .attr("height", "80")
+	 .attr("id", function(d,i) {return "CityPic" + i;})
+	 .attr("href", function(d,i){return d.Year + ".jpg"});
+ 
+   tiles.append("text")
+     .attr("x", "85")
+	 .attr("y","20")
+	 .attr("font-weight", "bold")
+	 .text(function(d,i) {return d.Year; });
+	 
+   tiles.append("text")
+     .attr("x", "20")
+	 .attr("y", "130")
+	 .text(function(d,i) {return d.City + ", " + d.Country;})
+ 
+ for(let count = 0; count<8; count++){
+   d3.select("#City"+count)
+	  .attr("opacity","0")
+	  .transition().duration(1500)
+	  .attr("opacity", "1")
+	  .delay(300*count);	
+ }
+ 	
+ 
+ for (let count = 0; count<8; count++){
+   d3.select("#City"+count)
+     .on("mouseover", function() {HighlightYear = count; return UpdateTiles();})
+     .on("mouseout", function() {HighlightYear = "-1"; return UpdateTiles();});
+ }  
+ 
+ function UpdateTiles(){
+   for (let count = 0; count<8; count++){
+   	 d3.select("#City"+count)
+	   .select("rect")
+	   .attr("fill", function(d,i) {
+	   	 if(count == GamesYear){
+		   return "gold";}
+		 else if(count == HighlightYear){
+		 	return "cyan";
+		 }
+		 else{
+		 	return "beige";
+		 }	
+		});
+	   } 
+   }
+ 
+ //create axis scales
+ 
+  var ys = d3.scaleLinear()
+    .domain([0,10])
+    .range([300,0]);
+ 
+  var xs = d3.scaleBand()
+    .range ([0, 400])
+	.padding(0.25)
+    .domain(games_data.map(function(d) { return d.Year; }))
+  
+  //create bars in bar chart
+  
+  d3.select("g")
+    .selectAll(".bar")
+    .data(games_data)
+         .enter().append("rect")
+         .attr("class", "bar")
+         .attr("x", function(d) { return xs(d.Year); })
+         .attr("y", "300")
+         .attr("width", xs.bandwidth())
+		 .attr("fill", "azure")
+		 .attr("height", "0")
+		 .transition().duration(1000)
+		 .delay(function(d,i){
+		 	return i*300;
+		 })
+         .attr("height", function(d) { return 300 - ys(d.Australia); })
+		 .attr("y", function(d) { return ys(d.Australia); })
+		 .attr("fill", function(d, i) {
+		   if(i == GamesYear) {return "gold";}
+		   else if(i == (GamesYear + 1)) {return "silver";}
+		   else {return "chocolate";}});
+
+//add axes
+
+  d3.select("svg").append("g")
+    .attr("transform", "translate(400,170)")
+    .call(d3.axisLeft(ys).tickValues([5,10]).tickFormat(d3.format("~s")));
+
+  d3.select("svg").append("g")
+    .style("font", "14px times")
+    .attr("transform", "translate(400,470)")
+    .call(d3.axisBottom(xs))
+	.selectAll(".tick text")
+      .call(wrap, xs.bandwidth());
+
+
+//enable text wrap
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+    while (word = words.pop()) {
+      line.push(word)
+      tspan.text(line.join(" "))
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop()
+        tspan.text(line.join(" "))
+        line = [word]
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+      }
+    }
+  })
+  }
+
+
+  }
+    </script>
+    
+    
+  </body>
+
+</html
