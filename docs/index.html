@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+  
+ <script src='https://d3js.org/d3.v5.min.js'></script>
+<style> rect {stroke: black;} </style>
+<body onload='init()'>
+<svg width=1200 height=800 id="MainSVG">
+  
+  <path d="M0 0 L1199 0 L1199 799 L0 799 Z" stroke="black" stroke-width="4" fill="white"></path>
+
+</svg>
+
+  
+  
+  <body>
+  <script>  
+  async function init() {
+    const data = await d3.csv(
+    'https://raw.githubusercontent.com/Alan-S-Anderson/illinois/main/docs/OlympicData.csv');
+  
+  d3.select("svg").append("svg:image")
+	 .attr("x","1")
+	 .attr("y", "1")
+	 .attr("width", "1198")
+	 .attr("height", "798")
+	 .attr("opacity", "0.2")
+	 .attr("id", "backing")
+	 .attr("href", "Stadium.jpg");
+  
+  var svg1 = d3.select("svg")
+  var g1 = svg1.append("g").attr("transform", "translate(400,150)");
+  
+// create critical state parameter and set to initial value
+  var GamesYear = "Total";
+  var HighlightYear = -1;
+
+//create sub-table of data that contains only the rows for average, hosting year and subsequent games
+  var data_sub = data.filter(function(d){return d.Year == "Average 1988-2016" || d.Year == "Year of Hosting" || d.Year == "Next Games After Hosting"});
+
+//create sub-table of data that contains only the rows for specific Olympic years
+  var games_data = data.filter(function(d){return d.Year != "Average 1988-2016" && d.Year != "Year of Hosting" && d.Year != "Next Games After Hosting"});
+ 
+ 
+ //Add headings
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "200")
+   .attr("y", "50")
+   .attr("font-size", "30px")
+   .attr("fill", "blue")
+   .text("Home ground advantage in the post Cold War summer Olympics"); 
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "120")
+   .attr("font-size", "large")
+   .text("Cumulative share of all Olympic medals won by last 8 host nations");
+ 
+ //Add annotation
+ 
+ var annotation = svg1.append("g");
+   
+ annotation
+   .append("rect")
+   .attr("x", "470")
+   .attr("y", "150")
+   .attr("width", "340")
+   .attr("height", "70")
+   .attr("fill", "skyblue");
+ 
+ annotation
+   .append("line")
+   .attr("x1", "580")
+   .attr("y1", "220")
+   .attr("x2", "590")
+   .attr("y2", "235")
+   .attr("stroke", "black");
+
+ annotation
+   .append("line")
+   .attr("x1", "690")
+   .attr("y1", "220")
+   .attr("x2", "730")
+   .attr("y2", "275")
+   .attr("stroke", "black");
+ 
+annotation
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "480")
+   .attr("y", "165")
+   .attr("font-size", "smaller")
+   .text("Subtantial host games perfomance boost detected, persisting ");
+   
+annotation
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "480")
+   .attr("y", "180")
+   .attr("font-size", "smaller")
+   .text("partially in subsequent games. This suggests a mix of ");  
+
+ annotation
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "480")
+   .attr("y", "195")
+   .attr("font-size", "smaller")
+   .text("short-term advantage (emotion, familiarity, lack of travel,");  
+ 
+ annotation
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "480")
+   .attr("y", "210")
+   .attr("font-size", "smaller")
+   .text("team size) and longer-lasting factors like sports investment.");  
+ 
+ annotation.attr("opacity","0")
+   .transition().duration(1500)
+   .attr("opacity", "1")
+   .delay(2000);
+ 
+   
+ //Add captions
+ 
+  d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "140")
+   .attr("font-size", "smaller")
+   .text("(Percent)");
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "360")
+   .attr("y", "520")
+   .attr("font-size", "smaller")
+   .text("Sum of the 8 countries' percentage shares of total medals (gold, silver, bronze with equal weighting)");
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "540")
+   .attr("font-size", "smaller")
+   .text("Sum of share of total medals at respective host games of each host country");
+   
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "560")
+   .attr("font-size", "smaller")
+   .text("Subsequent games to respective host games. As Tokyo results not yet available,");
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "572")
+   .attr("font-size", "smaller")
+   .text("mean performance substituted for Brazil's subsequent games.");
+ 
+ 
+ d3.select("svg")
+   .append("rect")
+   .attr("x", "360")
+   .attr("y", "530")
+   .attr("width", "10")
+   .attr("height", "10")
+   .attr("fill", "gold");
+ 
+ d3.select("svg")
+   .append("rect")
+   .attr("x", "360")
+   .attr("y", "550")
+   .attr("width", "10")
+   .attr("height", "10")
+   .attr("fill", "silver");
+ 
+ 
+ 
+ //Add the city tiles around the edge
+ 
+ 
+ var tiles = d3.select("svg")
+   .selectAll(".city")
+   .data(games_data)
+     .enter().append("svg:a")
+	 .attr("id", function(d,i) {return "City" + i;}) 
+	 .attr("class","city")
+	 .attr("xlink:href", function(d, i) {
+	 return d.Year + ".html"
+	 })
+	 .attr("transform", function(d, i) {
+	   var xorigin = 0;
+	   var yorigin = 0;
+	   if(i<=2){
+			xorigin = 50;
+		}
+		else if(i==3){
+			xorigin = 350;
+		}
+		else if (i==4){
+			xorigin = 650;
+		}
+		else{
+			xorigin = 950;
+		}
+		
+		if(i==0 || i==7){
+			yorigin = 100;
+		}
+		else if(i==1 || i==6){
+			yorigin = 350;
+		}
+		else{
+			yorigin = 600;
+		}
+
+	 return "translate(" + xorigin +"," + yorigin + ")";
+	 });
+	 
+	 
+   tiles.append("rect")
+	 .attr("width", "200")
+	 .attr("height", "150")
+	 .attr("rx", "15")
+	 .attr("fill", "beige");
+ 
+   tiles.append("svg:image")
+	 .attr("class","citypic")
+	 .attr("x","25")
+	 .attr("y", "25")
+	 .attr("width", "150")
+	 .attr("height", "80")
+	 .attr("id", function(d,i) {return "CityPic" + i;})
+	 .attr("href", function(d,i){return d.Year + ".jpg"});
+ 
+   tiles.append("text")
+     .attr("x", "85")
+	 .attr("y","20")
+	 .attr("font-weight", "bold")
+	 .text(function(d,i) {return d.Year; });
+	 
+   tiles.append("text")
+     .attr("x", "20")
+	 .attr("y", "130")
+	 .text(function(d,i) {return d.City + ", " + d.Country;})
+ 
+ 
+ for(let count = 0; count<8; count++){
+   d3.select("#City"+count)
+	  .attr("opacity","0")
+	  .transition().duration(1500)
+	  .attr("opacity", "1")
+	  .delay(300*count);	
+ }
+ 
+ 
+ for (let count = 0; count<8; count++){
+   d3.select("#City"+count)
+     .on("mouseover", function() {HighlightYear = count; return UpdateTiles();})
+     .on("mouseout", function() {HighlightYear = -1; return UpdateTiles();});
+ }  
+ 
+ function UpdateTiles(){
+   for (let count = 0; count<8; count++){
+   	 d3.select("#City"+count)
+	   .select("rect")
+	   .attr("fill", function(d,i) {
+	   	 if(count == HighlightYear){
+		   return "cyan";}
+		 else{
+		 	return "beige";
+		 }	
+		});
+	   } 
+   }
+ 
+ //create axis scales
+ 
+  var ys = d3.scaleLinear()
+    .domain([0,65])
+    .range([300,0]);
+ 
+  var xs = d3.scaleBand()
+    .range ([0, 400])
+	.padding(0.25)
+    .domain(data_sub.map(function(d) { return d.Year; }))
+  
+  //create bars in bar chart
+  
+  d3.select("g")
+    .selectAll(".bar")
+    .data(data_sub)
+         .enter().append("rect")
+         .attr("class", "bar")
+         .attr("x", function(d) { return xs(d.Year); })
+         .attr("y", "300")
+         .attr("width", xs.bandwidth())
+		 .attr("fill", "azure")
+		 .attr("height", "0")
+		 .transition().duration(4000)
+         .attr("height", function(d) { return 300 - ys(d.Total); })
+		 .attr("y", function(d) { return ys(d.Total); })
+		 .attr("fill", function(d) {
+		   if(d.Year == "Average 1988-2016") {return "chocolate";}
+		   else if(d.Year == "Year of Hosting") {return "gold";}
+		   else {return "silver";}});
+
+//add axes
+
+  d3.select("svg").append("g")
+    .attr("transform", "translate(400,150)")
+    .call(d3.axisLeft(ys).tickValues([10,20,30,40,50,60]).tickFormat(d3.format("~s")));
+
+  d3.select("svg").append("g")
+    .style("font", "14px times")
+    .attr("transform", "translate(400,450)")
+    .call(d3.axisBottom(xs))
+	.selectAll(".tick text")
+      .call(wrap, xs.bandwidth());
+
+
+//enable text wrap
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+    while (word = words.pop()) {
+      line.push(word)
+      tspan.text(line.join(" "))
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop()
+        tspan.text(line.join(" "))
+        line = [word]
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+      }
+    }
+  })
+  }
+
+
+  }
+    </script>
+    
+    
+  </body>
+
+</html
