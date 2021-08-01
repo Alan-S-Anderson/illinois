@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+  
+ <script src='https://d3js.org/d3.v5.min.js'></script>
+<style> rect {stroke: black;} </style>
+<body onload='init()'>
+<svg width=1200 height=800 id="MainSVG">
+  
+  <path d="M0 0 L1199 0 L1199 799 L0 799 Z" stroke="black" stroke-width="4" fill="white"></path>
+  <line id="First" stroke="lightskyblue" stroke-width="5" />
+  <line id="Second" stroke="lightskyblue" stroke-width="5" />
+  <line id="Third" stroke="lightskyblue" stroke-width="5" />
+  <polygon id="Arrow1" style="fill:lightskyblue;stroke:darkblue;stroke-width:0" />
+  <polygon id="Arrow2" style="fill:lightskyblue;stroke:darkblue;stroke-width:0" />
+  <polygon id="Arrow3" style="fill:lightskyblue;stroke:darkblue;stroke-width:0" />
+  
+</svg>
+
+  
+  
+  <body>
+  <script>  
+  async function init() {
+    const data = await d3.csv(
+    'https://raw.githubusercontent.com/Alan-S-Anderson/illinois/main/docs/OlympicData.csv');
+  
+  d3.select("svg").append("svg:image")
+	 .attr("x","1")
+	 .attr("y", "1")
+	 .attr("width", "1198")
+	 .attr("height", "798")
+	 .attr("opacity", "0.2")
+	 .attr("id", "backing")
+	 .attr("href", "Stadium.jpg");
+  
+  var svg1 = d3.select("svg")
+  var g1 = svg1.append("g").attr("transform", "translate(400,170)");
+  
+// create critical state parameter and set to initial value
+  var GamesYear = "Total";
+
+//create sub-table of data that contains only the rows for average, hosting year and subsequent games
+  var data_sub = data.filter(function(d){return d.Year == "Average 1988-2016" || d.Year == "Year of Hosting" || d.Year == "Next Games After Hosting"});
+
+//create sub-table of data that contains only the rows for specific Olympic years
+  var games_data = data.filter(function(d){return d.Year != "Average 1988-2016" && d.Year != "Year of Hosting" && d.Year != "Next Games After Hosting"});
+ 
+ 
+ 
+ //draw the timeline
+  d3.select("#First")
+    .attr("x1", "270")
+	.attr("y1", "200")
+	.attr("x2", "270")
+	.attr("y2", "200")
+    .transition().duration(1000)
+	.attr("y2", "580");
+ 
+ d3.select("#Second")
+    .attr("x1", "270")
+	.attr("y1", "580")
+	.attr("x2", "270")
+	.attr("y2", "580")
+    .transition().duration(1000)
+	.attr("x2", "930")
+	.delay(1000);
+ 
+ d3.select("#Third")
+    .attr("x1", "930")
+	.attr("y1", "580")
+	.attr("x2", "930")
+	.attr("y2", "580")
+    .transition().duration(1000)
+	.attr("y2", "200")
+	.delay(2000);
+ 
+ d3.select("#Arrow1")
+    .attr("points", "260,195 280,195 270,220")
+	.transition().duration(1000)
+	.attr("points", "260,575 280,575 270,600")
+	.transition().duration(0)
+	.remove();
+	
+d3.select("#Arrow2")
+    .attr("points", "265,570 265,590 290,580")
+	.attr("opacity", "0")
+	.transition().duration(0)
+	.attr("opacity", "1")
+	.delay(1000)
+	.transition().duration(1000)
+	.attr("points", "925,570 925,590 950,580")
+	.transition().duration(0)
+	.remove();
+	
+d3.select("#Arrow3")
+    .attr("points", "920,585 940,585 930, 560")
+	.attr("opacity", "0")
+	.transition().duration(0)
+	.attr("opacity", "1")
+	.delay(2000)
+	.transition().duration(1000)
+	.attr("points", "920,205 940,205 930, 180");	
+ 
+ //Add headings
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "200")
+   .attr("y", "50")
+   .attr("font-size", "30px")
+   .attr("fill", "blue")
+   .text("Home ground advantage in the post Cold War summer Olympics"); 
+ 
+ d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "140")
+   .attr("font-size", "large")
+   .text("Cumulative share of all Olympic medals won by last 8 host nations");
+   
+ //Add caption
+  d3.select("svg")
+   .append("text")
+   .attr("class", "heading")
+   .attr("x", "380")
+   .attr("y", "160")
+   .attr("font-size", "smaller")
+   .text("(Percent)");
+ 
+ //Add the city tiles around the edge
+ 
+ 
+ var tiles = d3.select("svg")
+   .selectAll(".city")
+   .data(games_data)
+     .enter().append("svg:a")
+	 .attr("id", function(d,i) {return "City" + i;}) 
+	 .attr("class","city")
+	 .attr("xlink:href", function(d, i) {
+	 return d.Year + ".jpg"
+	 })
+	 .attr("transform", function(d, i) {
+	   var xorigin = 0;
+	   var yorigin = 0;
+	   if(i<=2){
+			xorigin = 50;
+		}
+		else if(i==3){
+			xorigin = 350;
+		}
+		else if (i==4){
+			xorigin = 650;
+		}
+		else{
+			xorigin = 950;
+		}
+		
+		if(i==0 || i==7){
+			yorigin = 100;
+		}
+		else if(i==1 || i==6){
+			yorigin = 350;
+		}
+		else{
+			yorigin = 600;
+		}
+
+	 return "translate(" + xorigin +"," + yorigin + ")";
+	 });
+	 
+	 
+   tiles.append("rect")
+	 .attr("width", "200")
+	 .attr("height", "150")
+	 .attr("rx", "15")
+	 .attr("fill", "beige");
+ 
+   tiles.append("svg:image")
+	 .attr("class","citypic")
+	 .attr("x","25")
+	 .attr("y", "25")
+	 .attr("width", "150")
+	 .attr("height", "80")
+	 .attr("id", function(d,i) {return "CityPic" + i;})
+	 .attr("href", function(d,i){return d.Year + ".jpg"});
+ 
+   tiles.append("text")
+     .attr("x", "85")
+	 .attr("y","20")
+	 .attr("font-weight", "bold")
+	 .text(function(d,i) {return d.Year; });
+	 
+   tiles.append("text")
+     .attr("x", "20")
+	 .attr("y", "130")
+	 .text(function(d,i) {return d.City + ", " + d.Country;})
+ 
+ d3.select("#City0")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(0);	
+ 
+ d3.select("#City1")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(300);	
+ 
+ d3.select("#City2")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(600);	
+	
+ d3.select("#City3")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(900);	
+	
+ d3.select("#City4")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(1200);	
+	
+ d3.select("#City5")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(1500);	
+	
+ d3.select("#City6")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(1800);	
+ 
+ d3.select("#City7")
+	.attr("opacity", "0")
+	.transition().duration(1500)
+	.attr("opacity", "0.7")
+	.delay(2100);	
+ 
+ for (let count = 0; count<8; count++){
+   d3.select("#City"+count)
+     .on("mouseover", function() {GamesYear = count; return UpdateTiles();})
+     .on("mouseout", function() {GamesYear = "Total"; return UpdateTiles();});
+ }  
+ 
+ function UpdateTiles(){
+   for (let count = 0; count<8; count++){
+   	 d3.select("#City"+count)
+	   .attr("opacity", function(d,i) {
+	     if(count == GamesYear){
+		   return "1";}
+		 else{
+		   return "0.7";
+		 }
+       })
+	   .select("rect")
+	   .attr("fill", function(d,i) {
+	   	 if(count == GamesYear){
+		   return "gold";}
+		 else{
+		 	return "beige";
+		 }	
+		});
+	   } 
+   }
+ 
+ //create axis scales
+ 
+  var ys = d3.scaleLinear()
+    .domain([0,50])
+    .range([300,0]);
+ 
+  var xs = d3.scaleBand()
+    .range ([0, 400])
+	.padding(0.25)
+    .domain(data_sub.map(function(d) { return d.Year; }))
+  
+  //create bars in bar chart
+  
+  d3.select("g")
+    .selectAll(".bar")
+    .data(data_sub)
+         .enter().append("rect")
+         .attr("class", "bar")
+         .attr("x", function(d) { return xs(d.Year); })
+         .attr("y", "300")
+         .attr("width", xs.bandwidth())
+		 .attr("fill", "azure")
+		 .attr("height", "0")
+		 .transition().duration(4000)
+         .attr("height", function(d) { return 300 - ys(d.Total); })
+		 .attr("y", function(d) { return ys(d.Total); })
+		 .attr("fill", function(d) {
+		   if(d.Year == "Average 1988-2016") {return "chocolate";}
+		   else if(d.Year == "Year of Hosting") {return "gold";}
+		   else {return "silver";}});
+
+//add axes
+
+  d3.select("svg").append("g")
+    .attr("transform", "translate(400,170)")
+    .call(d3.axisLeft(ys).tickValues([10,20,30,40,50]).tickFormat(d3.format("~s")));
+
+  d3.select("svg").append("g")
+    .style("font", "14px times")
+    .attr("transform", "translate(400,470)")
+    .call(d3.axisBottom(xs))
+	.selectAll(".tick text")
+      .call(wrap, xs.bandwidth());
+
+
+//enable text wrap
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+    while (word = words.pop()) {
+      line.push(word)
+      tspan.text(line.join(" "))
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop()
+        tspan.text(line.join(" "))
+        line = [word]
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+      }
+    }
+  })
+  }
+
+
+  }
+    </script>
+    
+    
+  </body>
+
+</html
